@@ -13,7 +13,22 @@ const saleValidation = [
 
 // GET all sales
 router.get('/', (req, res) => {
-  db.all("SELECT * FROM sales", [], (err, rows) => {
+  const query = `
+    SELECT
+      sales.id,
+      sales.carId,
+      sales.customerId,
+      sales.date,
+      sales.price,
+      cars.model AS carModel,
+      customers.name AS customerName
+    FROM sales
+    JOIN cars ON sales.carId = cars.id
+    JOIN customers ON sales.customerId = customers.id
+    ORDER BY sales.date DESC
+  `;
+
+  db.all(query, [], (err, rows) => {
     if (err) {
       return res.status(500).json({ error: 'Erro interno do servidor' });
     }

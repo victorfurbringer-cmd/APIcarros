@@ -7,6 +7,7 @@ const elements = {
   summaryCars: document.querySelector('#summaryCars'),
   summaryCustomers: document.querySelector('#summaryCustomers'),
   summarySales: document.querySelector('#summarySales'),
+  summaryRevenue: document.querySelector('#summaryRevenue'),
   messageContainer: document.querySelector('#messageContainer'),
 };
 
@@ -52,6 +53,9 @@ async function loadSummary() {
   elements.summaryCars.textContent = cars.length;
   elements.summaryCustomers.textContent = customers.length;
   elements.summarySales.textContent = sales.length;
+  elements.summaryRevenue.textContent = formatCurrency(
+    sales.reduce((sum, sale) => sum + Number(sale.price), 0)
+  );
 }
 
 async function loadCars() {
@@ -168,8 +172,8 @@ async function loadSales() {
       const row = document.createElement('tr');
       row.innerHTML = `
         <td>${sale.id}</td>
-        <td>${sale.carId}</td>
-        <td>${sale.customerId}</td>
+        <td>${sale.carModel || sale.carId}</td>
+        <td>${sale.customerName || sale.customerId}</td>
         <td>${formatDate(sale.date)}</td>
         <td>${formatCurrency(sale.price)}</td>
         <td><button class="danger" onclick="deleteSale(${sale.id})">Excluir</button></td>
