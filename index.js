@@ -1,8 +1,17 @@
+require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const morgan = require('morgan');
+const db = require('./db');
+
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3000;
 
 // Middleware
+app.use(helmet());
+app.use(morgan('combined'));
+app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 

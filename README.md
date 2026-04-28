@@ -1,6 +1,6 @@
 # API de Loja de Venda de Carros
 
-Esta é uma API REST simples para gerenciar uma loja de venda de carros, construída com Node.js e Express, incluindo um front-end básico.
+Esta é uma API REST profissional para gerenciar uma loja de venda de carros, construída com Node.js, Express e SQLite, incluindo um front-end básico.
 
 ## Instalação
 
@@ -9,7 +9,14 @@ Esta é uma API REST simples para gerenciar uma loja de venda de carros, constru
    npm install
    ```
 
-2. Inicie o servidor:
+2. Configure as variáveis de ambiente (opcional):
+   - Crie um arquivo `.env` com:
+     ```
+     PORT=3001
+     NODE_ENV=development
+     ```
+
+3. Inicie o servidor:
    ```
    npm start
    ```
@@ -18,9 +25,22 @@ O servidor rodará em `http://localhost:3001`.
 
 ## Persistência de Dados
 
-Os dados são salvos em arquivos JSON (`cars.json`, `customers.json`, `sales.json`) e persistem entre reinicializações do servidor.
+Os dados são salvos em um banco de dados SQLite (`database.db`) e persistem entre reinicializações do servidor.
 
 ## Front-end
+
+Acesse `http://localhost:3001` no navegador para usar a interface web para gerenciar carros, clientes e vendas.
+
+## Tecnologias
+
+- **Backend**: Node.js, Express
+- **Banco de Dados**: SQLite
+- **Validação**: express-validator
+- **Segurança**: Helmet, CORS
+- **Logging**: Morgan
+- **Configuração**: dotenv
+
+## Endpoints da API
 
 Acesse `http://localhost:3000` no navegador para usar a interface web para gerenciar carros, clientes e vendas.
 

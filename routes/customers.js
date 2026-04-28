@@ -1,71 +1,92 @@
 const express = require('express');
-const fs = require('fs').promises;
-const path = require('path');
+const { body, validationResult } = require('express-validator');
+const db = require('../db');
 const router = express.Router();
 
-const customersFile = path.join(__dirname, '..', 'customers.json');
-
-// Helper to read customers
-async function readCustomers() {
-  try {
-    const data = await fs.readFile(customersFile, 'utf8');
-    return JSON.parse(data);
-  } catch (err) {
-    return [];
-  }
-}
-
-// Helper to write customers
-async function writeCustomers(customers) {
-  await fs.writeFile(customersFile, JSON.stringify(customers, null, 2));
-}
+// Validation rules
+const customerValidation = [
+  body('name').isString().notEmpty().withMessage('Nome é obrigatório'),
+  body('email').isEmail().withMessage('Email inválido')
+];
 
 // GET all customers
-router.get('/', async (req, res) => {
-  const customers = await readCustomers();
-  res.json(customers);
+router.get('/', (req, res) => {
+  db.all("SELECT * FROM customers", [], (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+    res.json(rows);
+  });
 });
 
 // GET customer by id
-router.get('/:id', async (req, res) => {
-  const customers = await readCustomers();
-  const customer = customers.find(c => c.id === parseInt(req.params.id));
-  if (!customer) return res.status(404).json({ message: 'Cliente não encontrado' });
-  res.json(customer);
+router.get('/:id', (req, res) => {
+  const { id } = req.params;
+  db.get("SELECT * FROM customers WHERE id = ?", [id], (err, row) => {
+    if (err) {
+      return res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+    if (!row) {
+      return res.status(404).json({ message: 'Cliente não encontrado' });
+    }
+    res.json(row);
+  });
 });
 
 // POST new customer
-router.post('/', async (req, res) => {
-  const customers = await readCustomers();
-  const newCustomer = {
-    id: customers.length > 0 ? Math.max(...customers.map(c => c.id)) + 1 : 1,
-    name: req.body.name,
-    email: req.body.email
-  };
-  customers.push(newCustomer);
-  await writeCustomers(customers);
-  res.status(201).json(newCustomer);
+router.post('/', customerValidation, (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const { name, email } = req.body;
+  db.run("INSERT INTO customers (name, email) VALUES (?, ?)", [name, email], function(err) {
+    if (err) {
+      if (err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+        return res.status(400).json({ error: 'Email já cadastrado' });
+      }
+      return res.status(500).json({ error: 'Erro ao criar cliente' });
+    }
+    res.status(201).json({ id: this.lastID, name, email });
+  });
 });
 
 // PUT update customer
-router.put('/:id', async (req, res) => {
-  const customers = await readCustomers();
-  const customer = customers.find(c => c.id === parseInt(req.params.id));
-  if (!customer) return res.status(404).json({ message: 'Cliente não encontrado' });
-  customer.name = req.body.name || customer.name;
-  customer.email = req.body.email || customer.email;
-  await writeCustomers(customers);
-  res.json(customer);
+router.put('/:id', customerValidation, (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const { id } = req.params;
+  const { name, email } = req.body;
+  db.run("UPDATE customers SET name = ?, email = ? WHERE id = ?", [name, email, id], function(err) {
+    if (err) {
+      if (err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+        return res.status(400).json({ error: 'Email já cadastrado' });
+      }
+      return res.status(500).json({ error: 'Erro ao atualizar cliente' });
+    }
+    if (this.changes === 0) {
+      return res.status(404).json({ message: 'Cliente não encontrado' });
+    }
+    res.json({ id: parseInt(id), name, email });
+  });
 });
 
 // DELETE customer
-router.delete('/:id', async (req, res) => {
-  const customers = await readCustomers();
-  const index = customers.findIndex(c => c.id === parseInt(req.params.id));
-  if (index === -1) return res.status(404).json({ message: 'Cliente não encontrado' });
-  customers.splice(index, 1);
-  await writeCustomers(customers);
-  res.json({ message: 'Cliente removido' });
+router.delete('/:id', (req, res) => {
+  const { id } = req.params;
+  db.run("DELETE FROM customers WHERE id = ?", [id], function(err) {
+    if (err) {
+      return res.status(500).json({ error: 'Erro ao deletar cliente' });
+    }
+    if (this.changes === 0) {
+      return res.status(404).json({ message: 'Cliente não encontrado' });
+    }
+    res.json({ message: 'Cliente removido' });
+  });
 });
 
 module.exports = router;

@@ -1,75 +1,112 @@
 const express = require('express');
-const fs = require('fs').promises;
-const path = require('path');
+const { body, validationResult } = require('express-validator');
+const db = require('../db');
 const router = express.Router();
 
-const salesFile = path.join(__dirname, '..', 'sales.json');
-
-// Helper to read sales
-async function readSales() {
-  try {
-    const data = await fs.readFile(salesFile, 'utf8');
-    return JSON.parse(data);
-  } catch (err) {
-    return [];
-  }
-}
-
-// Helper to write sales
-async function writeSales(sales) {
-  await fs.writeFile(salesFile, JSON.stringify(sales, null, 2));
-}
+// Validation rules
+const saleValidation = [
+  body('carId').isInt({ min: 1 }).withMessage('ID do carro inválido'),
+  body('customerId').isInt({ min: 1 }).withMessage('ID do cliente inválido'),
+  body('date').isISO8601().withMessage('Data inválida'),
+  body('price').isFloat({ min: 0 }).withMessage('Preço deve ser positivo')
+];
 
 // GET all sales
-router.get('/', async (req, res) => {
-  const sales = await readSales();
-  res.json(sales);
+router.get('/', (req, res) => {
+  db.all("SELECT * FROM sales", [], (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+    res.json(rows);
+  });
 });
 
 // GET sale by id
-router.get('/:id', async (req, res) => {
-  const sales = await readSales();
-  const sale = sales.find(s => s.id === parseInt(req.params.id));
-  if (!sale) return res.status(404).json({ message: 'Venda não encontrada' });
-  res.json(sale);
+router.get('/:id', (req, res) => {
+  const { id } = req.params;
+  db.get("SELECT * FROM sales WHERE id = ?", [id], (err, row) => {
+    if (err) {
+      return res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+    if (!row) {
+      return res.status(404).json({ message: 'Venda não encontrada' });
+    }
+    res.json(row);
+  });
 });
 
 // POST new sale
-router.post('/', async (req, res) => {
-  const sales = await readSales();
-  const newSale = {
-    id: sales.length > 0 ? Math.max(...sales.map(s => s.id)) + 1 : 1,
-    carId: req.body.carId,
-    customerId: req.body.customerId,
-    date: req.body.date || new Date().toISOString().split('T')[0],
-    price: req.body.price
-  };
-  sales.push(newSale);
-  await writeSales(sales);
-  res.status(201).json(newSale);
+router.post('/', saleValidation, (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const { carId, customerId, date, price } = req.body;
+
+  // Check if car and customer exist
+  db.get("SELECT id FROM cars WHERE id = ?", [carId], (err, car) => {
+    if (err || !car) {
+      return res.status(400).json({ error: 'Carro não encontrado' });
+    }
+    db.get("SELECT id FROM customers WHERE id = ?", [customerId], (err, customer) => {
+      if (err || !customer) {
+        return res.status(400).json({ error: 'Cliente não encontrado' });
+      }
+      db.run("INSERT INTO sales (carId, customerId, date, price) VALUES (?, ?, ?, ?)", [carId, customerId, date, price], function(err) {
+        if (err) {
+          return res.status(500).json({ error: 'Erro ao criar venda' });
+        }
+        res.status(201).json({ id: this.lastID, carId, customerId, date, price });
+      });
+    });
+  });
 });
 
 // PUT update sale
-router.put('/:id', async (req, res) => {
-  const sales = await readSales();
-  const sale = sales.find(s => s.id === parseInt(req.params.id));
-  if (!sale) return res.status(404).json({ message: 'Venda não encontrada' });
-  sale.carId = req.body.carId || sale.carId;
-  sale.customerId = req.body.customerId || sale.customerId;
-  sale.date = req.body.date || sale.date;
-  sale.price = req.body.price || sale.price;
-  await writeSales(sales);
-  res.json(sale);
+router.put('/:id', saleValidation, (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const { id } = req.params;
+  const { carId, customerId, date, price } = req.body;
+
+  // Check if car and customer exist
+  db.get("SELECT id FROM cars WHERE id = ?", [carId], (err, car) => {
+    if (err || !car) {
+      return res.status(400).json({ error: 'Carro não encontrado' });
+    }
+    db.get("SELECT id FROM customers WHERE id = ?", [customerId], (err, customer) => {
+      if (err || !customer) {
+        return res.status(400).json({ error: 'Cliente não encontrado' });
+      }
+      db.run("UPDATE sales SET carId = ?, customerId = ?, date = ?, price = ? WHERE id = ?", [carId, customerId, date, price, id], function(err) {
+        if (err) {
+          return res.status(500).json({ error: 'Erro ao atualizar venda' });
+        }
+        if (this.changes === 0) {
+          return res.status(404).json({ message: 'Venda não encontrada' });
+        }
+        res.json({ id: parseInt(id), carId, customerId, date, price });
+      });
+    });
+  });
 });
 
 // DELETE sale
-router.delete('/:id', async (req, res) => {
-  const sales = await readSales();
-  const index = sales.findIndex(s => s.id === parseInt(req.params.id));
-  if (index === -1) return res.status(404).json({ message: 'Venda não encontrada' });
-  sales.splice(index, 1);
-  await writeSales(sales);
-  res.json({ message: 'Venda removida' });
+router.delete('/:id', (req, res) => {
+  const { id } = req.params;
+  db.run("DELETE FROM sales WHERE id = ?", [id], function(err) {
+    if (err) {
+      return res.status(500).json({ error: 'Erro ao deletar venda' });
+    }
+    if (this.changes === 0) {
+      return res.status(404).json({ message: 'Venda não encontrada' });
+    }
+    res.json({ message: 'Venda removida' });
+  });
 });
 
 module.exports = router;
