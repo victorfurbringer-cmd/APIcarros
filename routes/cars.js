@@ -7,7 +7,8 @@ const router = express.Router();
 const carValidation = [
   body('model').isString().notEmpty().withMessage('Modelo é obrigatório'),
   body('year').isInt({ min: 1900, max: new Date().getFullYear() + 1 }).withMessage('Ano inválido'),
-  body('price').isFloat({ min: 0 }).withMessage('Preço deve ser positivo')
+  body('price').isFloat({ min: 0 }).withMessage('Preço deve ser positivo'),
+  body('image').optional({ checkFalsy: true }).isURL().withMessage('URL de imagem inválida')
 ];
 
 // GET all cars
@@ -41,12 +42,14 @@ router.post('/', carValidation, (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { model, year, price } = req.body;
-  db.run("INSERT INTO cars (model, year, price) VALUES (?, ?, ?)", [model, year, price], function(err) {
+  const { model, year, price, image } = req.body;
+  const imageUrl = image || 'https://via.placeholder.com/120x80?text=Carro';
+
+  db.run("INSERT INTO cars (model, year, price, image) VALUES (?, ?, ?, ?)", [model, year, price, imageUrl], function(err) {
     if (err) {
       return res.status(500).json({ error: 'Erro ao criar carro' });
     }
-    res.status(201).json({ id: this.lastID, model, year, price });
+    res.status(201).json({ id: this.lastID, model, year, price, image: imageUrl });
   });
 });
 
@@ -58,15 +61,23 @@ router.put('/:id', carValidation, (req, res) => {
   }
 
   const { id } = req.params;
-  const { model, year, price } = req.body;
-  db.run("UPDATE cars SET model = ?, year = ?, price = ? WHERE id = ?", [model, year, price, id], function(err) {
+  const { model, year, price, image } = req.body;
+
+  db.get("SELECT * FROM cars WHERE id = ?", [id], (err, existingCar) => {
     if (err) {
-      return res.status(500).json({ error: 'Erro ao atualizar carro' });
+      return res.status(500).json({ error: 'Erro interno do servidor' });
     }
-    if (this.changes === 0) {
+    if (!existingCar) {
       return res.status(404).json({ message: 'Carro não encontrado' });
     }
-    res.json({ id: parseInt(id), model, year, price });
+
+    const imageUrl = image || existingCar.image || 'https://via.placeholder.com/120x80?text=Carro';
+    db.run("UPDATE cars SET model = ?, year = ?, price = ?, image = ? WHERE id = ?", [model, year, price, imageUrl, id], function(err) {
+      if (err) {
+        return res.status(500).json({ error: 'Erro ao atualizar carro' });
+      }
+      res.json({ id: parseInt(id), model, year, price, image: imageUrl });
+    });
   });
 });
 

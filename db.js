@@ -11,9 +11,16 @@ db.serialize(() => {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       model TEXT NOT NULL,
       year INTEGER NOT NULL,
-      price REAL NOT NULL
+      price REAL NOT NULL,
+      image TEXT
     )
   `);
+
+  db.all("PRAGMA table_info(cars)", [], (err, columns) => {
+    if (!err && !columns.some(column => column.name === 'image')) {
+      db.run('ALTER TABLE cars ADD COLUMN image TEXT');
+    }
+  });
 
   db.run(`
     CREATE TABLE IF NOT EXISTS customers (
@@ -38,9 +45,9 @@ db.serialize(() => {
   // Insert initial data if tables are empty
   db.get("SELECT COUNT(*) as count FROM cars", (err, row) => {
     if (row.count === 0) {
-      const stmt = db.prepare("INSERT INTO cars (model, year, price) VALUES (?, ?, ?)");
-      stmt.run("Fusca", 1970, 15000);
-      stmt.run("Civic", 2020, 80000);
+      const stmt = db.prepare("INSERT INTO cars (model, year, price, image) VALUES (?, ?, ?, ?)");
+      stmt.run("Fusca", 1970, 15000, "https://via.placeholder.com/120x80?text=Fusca");
+      stmt.run("Civic", 2020, 80000, "https://via.placeholder.com/120x80?text=Civic");
       stmt.finalize();
     }
   });
