@@ -3,109 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loja de Carros</title>
+    <title>Loja de Carros - Sistema de Gestão</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h1 { color: #333; }
-        .section { margin-bottom: 30px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        form { margin-bottom: 20px; }
-        input, button { margin: 5px; padding: 8px; }
-        button { background-color: #4CAF50; color: white; border: none; cursor: pointer; }
-        button:hover { background-color: #45a049; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 40px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .section h2 {
+            color: #444;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        tr:hover {
+            background-color: #e9ecef;
+        }
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: end;
+        }
+        input, button {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        input {
+            flex: 1;
+            min-width: 150px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 10px 20px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+        }
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+        .success {
+            color: #28a745;
+            margin-top: 10px;
+        }
+        .error {
+            color: #dc3545;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
-    <h1>Loja de Venda de Carros</h1>
+    <div class="container">
+        <h1>Sistema de Gestão - Loja de Carros</h1>
 
-    <div class="section">
-        <h2>Carros</h2>
-        <table id="carsTable">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Modelo</th>
-                    <th>Ano</th>
-                    <th>Preço</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        <form id="carForm">
-            <input type="text" id="carModel" placeholder="Modelo" required>
-            <input type="number" id="carYear" placeholder="Ano" required>
-            <input type="number" id="carPrice" placeholder="Preço" required>
-            <button type="submit">Adicionar Carro</button>
-        </form>
-    </div>
+        <div class="section">
+            <h2>Carros Disponíveis</h2>
+            <table id="carsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Modelo</th>
+                        <th>Ano</th>
+                        <th>Preço (R$)</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <form id="carForm">
+                <input type="text" id="carModel" placeholder="Modelo do carro" required>
+                <input type="number" id="carYear" placeholder="Ano" required>
+                <input type="number" id="carPrice" placeholder="Preço" step="0.01" required>
+                <button type="submit">Adicionar Carro</button>
+            </form>
+        </div>
 
-    <div class="section">
-        <h2>Clientes</h2>
-        <table id="customersTable">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>Email</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        <form id="customerForm">
-            <input type="text" id="customerName" placeholder="Nome" required>
-            <input type="email" id="customerEmail" placeholder="Email" required>
-            <button type="submit">Adicionar Cliente</button>
-        </form>
-    </div>
+        <div class="section">
+            <h2>Clientes Cadastrados</h2>
+            <table id="customersTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <form id="customerForm">
+                <input type="text" id="customerName" placeholder="Nome completo" required>
+                <input type="email" id="customerEmail" placeholder="Email" required>
+                <button type="submit">Adicionar Cliente</button>
+            </form>
+        </div>
 
-    <div class="section">
-        <h2>Vendas</h2>
-        <table id="salesTable">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>ID Carro</th>
-                    <th>ID Cliente</th>
-                    <th>Data</th>
-                    <th>Preço</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        <form id="saleForm">
-            <input type="number" id="saleCarId" placeholder="ID Carro" required>
-            <input type="number" id="saleCustomerId" placeholder="ID Cliente" required>
-            <input type="date" id="saleDate" required>
-            <input type="number" id="salePrice" placeholder="Preço" required>
-            <button type="submit">Registrar Venda</button>
-        </form>
-    </div>
+        <div class="section">
+            <h2>Histórico de Vendas</h2>
+            <table id="salesTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>ID Carro</th>
+                        <th>ID Cliente</th>
+                        <th>Data</th>
+                        <th>Preço (R$)</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <form id="saleForm">
+                <input type="number" id="saleCarId" placeholder="ID do Carro" required>
+                <input type="number" id="saleCustomerId" placeholder="ID do Cliente" required>
+                <input type="date" id="saleDate" required>
+                <input type="number" id="salePrice" placeholder="Preço" step="0.01" required>
+                <button type="submit">Registrar Venda</button>
+            </form>
+        </div>
 
     <script>
         const apiUrl = 'http://localhost:3001';
 
         // Funções para Carros
         async function loadCars() {
-            const response = await fetch(`${apiUrl}/cars`);
-            const cars = await response.json();
-            const tbody = document.querySelector('#carsTable tbody');
-            tbody.innerHTML = '';
-            cars.forEach(car => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${car.id}</td>
-                        <td>${car.model}</td>
-                        <td>${car.year}</td>
-                        <td>${car.price}</td>
-                        <td><button onclick="deleteCar(${car.id})">Excluir</button></td>
-                    </tr>
-                `;
-            });
+            try {
+                const response = await fetch(`${apiUrl}/cars`);
+                const cars = await response.json();
+                const tbody = document.querySelector('#carsTable tbody');
+                tbody.innerHTML = '';
+                cars.forEach(car => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${car.id}</td>
+                            <td>${car.model}</td>
+                            <td>${car.year}</td>
+                            <td>R$ ${car.price.toFixed(2)}</td>
+                            <td><button class="delete-btn" onclick="deleteCar(${car.id})">Excluir</button></td>
+                        </tr>
+                    `;
+                });
+            } catch (error) {
+                console.error('Erro ao carregar carros:', error);
+            }
         }
 
         async function addCar(event) {
@@ -113,74 +199,116 @@
             const model = document.getElementById('carModel').value;
             const year = document.getElementById('carYear').value;
             const price = document.getElementById('carPrice').value;
-            await fetch(`${apiUrl}/cars`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ model, year: parseInt(year), price: parseFloat(price) })
-            });
-            loadCars();
-            document.getElementById('carForm').reset();
+            try {
+                const response = await fetch(`${apiUrl}/cars`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ model, year: parseInt(year), price: parseFloat(price) })
+                });
+                if (response.ok) {
+                    loadCars();
+                    document.getElementById('carForm').reset();
+                    showMessage('Carro adicionado com sucesso!', 'success');
+                } else {
+                    const error = await response.json();
+                    showMessage(error.errors ? error.errors[0].msg : 'Erro ao adicionar carro', 'error');
+                }
+            } catch (error) {
+                showMessage('Erro de conexão', 'error');
+            }
         }
 
         async function deleteCar(id) {
-            await fetch(`${apiUrl}/cars/${id}`, { method: 'DELETE' });
-            loadCars();
+            if (confirm('Tem certeza que deseja excluir este carro?')) {
+                try {
+                    await fetch(`${apiUrl}/cars/${id}`, { method: 'DELETE' });
+                    loadCars();
+                    showMessage('Carro excluído com sucesso!', 'success');
+                } catch (error) {
+                    showMessage('Erro ao excluir carro', 'error');
+                }
+            }
         }
 
         // Funções para Clientes
         async function loadCustomers() {
-            const response = await fetch(`${apiUrl}/customers`);
-            const customers = await response.json();
-            const tbody = document.querySelector('#customersTable tbody');
-            tbody.innerHTML = '';
-            customers.forEach(customer => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${customer.id}</td>
-                        <td>${customer.name}</td>
-                        <td>${customer.email}</td>
-                        <td><button onclick="deleteCustomer(${customer.id})">Excluir</button></td>
-                    </tr>
-                `;
-            });
+            try {
+                const response = await fetch(`${apiUrl}/customers`);
+                const customers = await response.json();
+                const tbody = document.querySelector('#customersTable tbody');
+                tbody.innerHTML = '';
+                customers.forEach(customer => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${customer.id}</td>
+                            <td>${customer.name}</td>
+                            <td>${customer.email}</td>
+                            <td><button class="delete-btn" onclick="deleteCustomer(${customer.id})">Excluir</button></td>
+                        </tr>
+                    `;
+                });
+            } catch (error) {
+                console.error('Erro ao carregar clientes:', error);
+            }
         }
 
         async function addCustomer(event) {
             event.preventDefault();
             const name = document.getElementById('customerName').value;
             const email = document.getElementById('customerEmail').value;
-            await fetch(`${apiUrl}/customers`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email })
-            });
-            loadCustomers();
-            document.getElementById('customerForm').reset();
+            try {
+                const response = await fetch(`${apiUrl}/customers`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email })
+                });
+                if (response.ok) {
+                    loadCustomers();
+                    document.getElementById('customerForm').reset();
+                    showMessage('Cliente adicionado com sucesso!', 'success');
+                } else {
+                    const error = await response.json();
+                    showMessage(error.errors ? error.errors[0].msg : error.error || 'Erro ao adicionar cliente', 'error');
+                }
+            } catch (error) {
+                showMessage('Erro de conexão', 'error');
+            }
         }
 
         async function deleteCustomer(id) {
-            await fetch(`${apiUrl}/customers/${id}`, { method: 'DELETE' });
-            loadCustomers();
+            if (confirm('Tem certeza que deseja excluir este cliente?')) {
+                try {
+                    await fetch(`${apiUrl}/customers/${id}`, { method: 'DELETE' });
+                    loadCustomers();
+                    showMessage('Cliente excluído com sucesso!', 'success');
+                } catch (error) {
+                    showMessage('Erro ao excluir cliente', 'error');
+                }
+            }
         }
 
         // Funções para Vendas
         async function loadSales() {
-            const response = await fetch(`${apiUrl}/sales`);
-            const sales = await response.json();
-            const tbody = document.querySelector('#salesTable tbody');
-            tbody.innerHTML = '';
-            sales.forEach(sale => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${sale.id}</td>
-                        <td>${sale.carId}</td>
-                        <td>${sale.customerId}</td>
-                        <td>${sale.date}</td>
-                        <td>${sale.price}</td>
-                        <td><button onclick="deleteSale(${sale.id})">Excluir</button></td>
-                    </tr>
-                `;
-            });
+            try {
+                const response = await fetch(`${apiUrl}/sales`);
+                const sales = await response.json();
+                const tbody = document.querySelector('#salesTable tbody');
+                tbody.innerHTML = '';
+                sales.forEach(sale => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${sale.id}</td>
+                            <td>${sale.carId}</td>
+                            <td>${sale.customerId}</td>
+                            <td>${new Date(sale.date).toLocaleDateString('pt-BR')}</td>
+                            <td>R$ ${sale.price.toFixed(2)}</td>
+                            <td><button class="delete-btn" onclick="deleteSale(${sale.id})">Excluir</button></td>
+                        </tr>
+                    `;
+                });
+            } catch (error) {
+                console.error('Erro ao carregar vendas:', error);
+            }
         }
 
         async function addSale(event) {
@@ -189,18 +317,50 @@
             const customerId = document.getElementById('saleCustomerId').value;
             const date = document.getElementById('saleDate').value;
             const price = document.getElementById('salePrice').value;
-            await fetch(`${apiUrl}/sales`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ carId: parseInt(carId), customerId: parseInt(customerId), date, price: parseFloat(price) })
-            });
-            loadSales();
-            document.getElementById('saleForm').reset();
+            try {
+                const response = await fetch(`${apiUrl}/sales`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ carId: parseInt(carId), customerId: parseInt(customerId), date, price: parseFloat(price) })
+                });
+                if (response.ok) {
+                    loadSales();
+                    document.getElementById('saleForm').reset();
+                    showMessage('Venda registrada com sucesso!', 'success');
+                } else {
+                    const error = await response.json();
+                    showMessage(error.errors ? error.errors[0].msg : error.error || 'Erro ao registrar venda', 'error');
+                }
+            } catch (error) {
+                showMessage('Erro de conexão', 'error');
+            }
         }
 
         async function deleteSale(id) {
-            await fetch(`${apiUrl}/sales/${id}`, { method: 'DELETE' });
-            loadSales();
+            if (confirm('Tem certeza que deseja excluir esta venda?')) {
+                try {
+                    await fetch(`${apiUrl}/sales/${id}`, { method: 'DELETE' });
+                    loadSales();
+                    showMessage('Venda excluída com sucesso!', 'success');
+                } catch (error) {
+                    showMessage('Erro ao excluir venda', 'error');
+                }
+            }
+        }
+
+        // Função para mostrar mensagens
+        function showMessage(message, type) {
+            // Remove mensagens anteriores
+            const existing = document.querySelector('.success, .error');
+            if (existing) existing.remove();
+
+            const msgDiv = document.createElement('div');
+            msgDiv.className = type;
+            msgDiv.textContent = message;
+            document.querySelector('.container').insertBefore(msgDiv, document.querySelector('.section'));
+
+            // Remove após 3 segundos
+            setTimeout(() => msgDiv.remove(), 3000);
         }
 
         // Carregar dados ao iniciar
