@@ -46,8 +46,16 @@ db.serialize(() => {
   db.get("SELECT COUNT(*) as count FROM cars", (err, row) => {
     if (row.count === 0) {
       const stmt = db.prepare("INSERT INTO cars (model, year, price, image) VALUES (?, ?, ?, ?)");
-      stmt.run("Fusca", 1970, 15000, "https://via.placeholder.com/120x80?text=Fusca");
-      stmt.run("Civic", 2020, 80000, "https://via.placeholder.com/120x80?text=Civic");
+      stmt.run("Fusca", 1970, 15000, "https://images.pexels.com/photos/210019/pexels-photo-210019.jpeg?auto=compress&cs=tinysrgb&w=400");
+      stmt.run("Civic", 2020, 80000, "https://images.pexels.com/photos/358070/pexels-photo-358070.jpeg?auto=compress&cs=tinysrgb&w=400");
+      stmt.run("Corolla", 2022, 95000, "https://images.pexels.com/photos/1191582/pexels-photo-1191582.jpeg?auto=compress&cs=tinysrgb&w=400");
+      stmt.run("Jeep Renegade", 2021, 120000, "https://images.pexels.com/photos/164634/jeep-car-4x4-vehicle-164634.jpeg?auto=compress&cs=tinysrgb&w=400");
+      stmt.run("BMW X3", 2023, 250000, "https://images.pexels.com/photos/1719648/pexels-photo-1719648.jpeg?auto=compress&cs=tinysrgb&w=400");
+      stmt.run("Mercedes C-Class", 2022, 300000, "https://images.pexels.com/photos/3729464/pexels-photo-3729464.jpeg?auto=compress&cs=tinysrgb&w=400");
+      stmt.run("Audi A4", 2021, 220000, "https://images.pexels.com/photos/3729464/pexels-photo-3729464.jpeg?auto=compress&cs=tinysrgb&w=400");
+      stmt.run("Ford Mustang", 2019, 180000, "https://images.pexels.com/photos/1719648/pexels-photo-1719648.jpeg?auto=compress&cs=tinysrgb&w=400");
+      stmt.run("Chevrolet Camaro", 2020, 200000, "https://images.pexels.com/photos/210019/pexels-photo-210019.jpeg?auto=compress&cs=tinysrgb&w=400");
+      stmt.run("Volkswagen Golf", 2022, 85000, "https://images.pexels.com/photos/1191582/pexels-photo-1191582.jpeg?auto=compress&cs=tinysrgb&w=400");
       stmt.finalize();
     }
   });

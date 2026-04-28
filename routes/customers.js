@@ -5,8 +5,8 @@ const router = express.Router();
 
 // Validation rules
 const customerValidation = [
-  body('name').isString().notEmpty().withMessage('Nome é obrigatório'),
-  body('email').isEmail().withMessage('Email inválido')
+  body('name').isString().trim().notEmpty().withMessage('Nome é obrigatório'),
+  body('email').isEmail().normalizeEmail().withMessage('Email inválido')
 ];
 
 // GET all customers
