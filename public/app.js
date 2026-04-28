@@ -97,7 +97,7 @@ async function loadCars() {
       const row = document.createElement('tr');
       row.innerHTML = `
         <td>${car.id}</td>
-        <td><img src="${car.image || 'https://via.placeholder.com/120x80?text=Carro'}" alt="${car.model}" class="car-thumb"></td>
+        <td><img src="${car.image || 'https://via.placeholder.com/120x80?text=Carro'}" alt="${car.model}" class="car-thumb" onerror="this.src='https://via.placeholder.com/120x80?text=Carro'" /></td>
         <td>${car.model}</td>
         <td>${car.year}</td>
         <td>${formatCurrency(car.price)}</td>
